@@ -1,12 +1,12 @@
 defmodule CurrencyConversion.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [app: :currency_conversion,
      docs: docs(),
-     version: "0.1.0",
+     version: @version,
      elixir: "~> 1.3",
      description: description(),
      package: package(),
