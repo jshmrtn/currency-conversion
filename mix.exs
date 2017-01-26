@@ -43,11 +43,11 @@ defmodule CurrencyConversion.Mixfile do
      files: ["lib", "mix.exs", "README*", "LICENSE*"],
      maintainers: ["Jonatan Männchen"],
      licenses: ["MIT"],
-     links: %{"GitHub" => "https://github.com/jshmrtn/currency-converter"}]
+     links: %{"GitHub" => "https://github.com/jshmrtn/ccurrency-conversion"}]
   end
 
   def docs do
     [source_ref: "v#{@version}",
-     source_url: "https://github.com/jshmrtn/currency-converter"]
+     source_url: "https://github.com/jshmrtn/currency-conversion"]
   end
 end
