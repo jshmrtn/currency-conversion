@@ -18,7 +18,7 @@ defmodule CurrencyConversion.UpdateWorker do
   @spec init(:ok) :: {:ok, Rates.t} | {:stop, any}
   def init(:ok) do
     Process.send_after(self(), :refresh, get_refresh_interval())
-    case refresh do
+    case refresh() do
       {:ok, rates} -> {:ok, rates}
       {:error, binary} -> {:stop, {:error, binary}}
     end

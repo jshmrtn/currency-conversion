@@ -20,14 +20,20 @@ end
 
 ## Configuration
 
-There are two config options:
-
 - `source` - Configure which Data Source Should Be Used.
   * Type: `atom`
   * Default: `CurrencyConversion.Source.Fixer`
+  * Restrictions: Must implement `CurrencyConversion.Source` behaviour
+  * Given Implementations:
+    - `CurrencyConversion.Source.Fixer` - Fixer IO
+    - `CurrencyConversion.Source.Test` - Test Source
 - `refresh_interval` - Configure how often the data should be refreshed. (in ms)
   * Type: `integer`
   * Default: `86_400_000` (Once per Day)
+- `test_rates` - Configure rates for `CurrencyConversion.Source.Test` source
+  * Type: `{atom, %{atom: float}}`
+  * Default: see `CurrencyConversion.Source.Test.@default_rates`
+  * Example: `{:EUR, %{CHF: 7}}`
 
 ```elixir
 config :currency_conversion,
@@ -40,6 +46,16 @@ config :currency_conversion,
 A custom source can be implemented by using the behaviour `CurrencyConversion.Source` and reconfiguring the `source` config.
 
 It only has to implement the function `load/0`, which produces a struct of type `%CurrencyConversion.Rates{}`.
+
+## Test
+
+To prevent HTTP calls in the Tests, configure the Test Source. (See the configuration `test_rates` for custom test rates.)
+
+```elixir
+config :currency_conversion,
+  source: CurrencyConversion.Source.Test,
+  refresh_interval: 86_400_000
+```
 
 ## Usage
 
