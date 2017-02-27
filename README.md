@@ -14,7 +14,7 @@ The package can be installed by adding `currency_conversion` to your list of dep
 
 ```elixir
 def deps do
-  [{:currency_conversion, "~> 0.1.2"}]
+  [{:currency_conversion, "~> 0.2.0"}]
 end
 ```
 
