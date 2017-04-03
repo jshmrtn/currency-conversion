@@ -40,4 +40,18 @@ defmodule CurrencyConversion do
   def convert(amount, to_currency, rates) do
     convert(convert(amount, rates.base, rates), to_currency, rates)
   end
+
+  @doc """
+  Get all currencies
+
+  ### Examples
+
+      iex> CurrencyConversion.get_currencies(%CurrencyConversion.Rates{base: :EUR,
+      ...>  rates: %{CHF: 0.5, USD: 0.75}})
+      [:EUR, :CHF, :USD]
+
+  """
+  @spec get_currencies(Rates.t) :: [atom]
+  def get_currencies(rates \\ UpdateWorker.get_rates())
+  def get_currencies(%Rates{base: base, rates: rates}), do: [base | Map.keys(rates)]
 end
