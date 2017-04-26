@@ -27,10 +27,15 @@ defmodule CurrencyConversion do
       ...>  rates: %{CHF: 0.5, USD: 0.75}})
       %Money{amount: 0, currency: :EUR}
 
+      iex> CurrencyConversion.convert(Money.new(7_20, :CHF), :CHF, %CurrencyConversion.Rates{base: :EUR,
+      ...>  rates: %{CHF: 0.5, USD: 0.75}})
+      %Money{amount: 7_20, currency: :CHF}
+
   """
   @spec convert(Money.t, atom, Rates.t) :: Money.t
   def convert(amount, to_currency, rates \\ UpdateWorker.get_rates())
   def convert(%Money{amount: 0}, to_currency, _), do: Money.new(0, to_currency)
+  def convert(amount = %Money{currency: currency}, currency, _), do: amount
   def convert(%Money{amount: amount, currency: currency}, to_currency, %Rates{base: currency, rates: rates}) do
     Money.new(round(amount * Map.fetch!(rates, to_currency)), to_currency)
   end
