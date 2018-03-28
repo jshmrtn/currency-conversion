@@ -25,7 +25,7 @@ defmodule CurrencyConversion.Source.Fixer do
 
   """
   def load do
-    case HTTPotion.get(@base_url, query: %{access_key: get_access_key}) do
+    case HTTPotion.get(@base_url, query: %{access_key: get_access_key()}) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Fixer.io API unavailable."}
     end
