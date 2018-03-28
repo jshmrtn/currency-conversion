@@ -6,8 +6,8 @@ defmodule CurrencyConversion.Source.Fixer do
   alias Poison.Parser
 
   @behaviour CurrencyConversion.Source
-
-  @base_url "https://data.fixer.io/api/latest"
+  @default_protocol "http"
+  @base_endpoint "data.fixer.io/api/latest"
   @doc """
   Load current currency rates from fixer.io.
 
@@ -25,24 +25,26 @@ defmodule CurrencyConversion.Source.Fixer do
 
   """
   def load do
-    case HTTPotion.get(@base_url, query: %{access_key: get_access_key()}) do
+    case HTTPotion.get(base_url(), query: %{access_key: get_access_key()}) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Fixer.io API unavailable."}
     end
   end
 
+  require IEx
+
   defp parse(body) do
     case Parser.parse(body) do
-      {:ok, data} -> interpret data
+      {:ok, data} -> interpret(data)
       _ -> {:error, "JSON decoding of response body failed."}
     end
   end
 
   defp interpret(%{"base" => base, "rates" => rates = %{}}) do
     case interpret_rates(Map.to_list(rates)) do
-      {:ok, rates} -> {:ok, %CurrencyConversion.Rates{
+      {:ok, interpreted_rates} -> {:ok, %CurrencyConversion.Rates{
         base: String.to_atom(base),
-        rates: rates
+        rates: interpreted_rates
       }}
       error -> error
     end
@@ -50,11 +52,16 @@ defmodule CurrencyConversion.Source.Fixer do
   defp interpret(_data), do: {:error, "Fixer API Schema has changed."}
 
   defp interpret_rates(rates, accumulator \\ %{})
-  defp interpret_rates([{currency, rate} | tail], accumulator) when is_binary(currency) and is_float(rate) do
+
+  defp interpret_rates([{currency, rate} | tail], accumulator) when is_binary(currency) and (is_float(rate) or is_integer(rate)) do
     interpret_rates(tail, Map.put(accumulator, String.to_atom(currency), rate))
   end
+
   defp interpret_rates([_ | _], _), do: {:error, "Fixer API Schema has changed."}
   defp interpret_rates([], accumulator), do: {:ok, accumulator}
 
+  defp base_url, do: get_protocol() <> "://" <> @base_endpoint
+
   defp get_access_key, do: Application.get_env(:currency_conversion, :source_api_key)
+  defp get_protocol, do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
 end

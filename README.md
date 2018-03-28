@@ -38,6 +38,9 @@ end
 ```elixir
 config :currency_conversion,
   source: CurrencyConversion.Source.Fixer,
+  source_api_key: "FIXER_ACCESS_KEY",
+  # defaults to http since free access key only supports http
+  source_protocol: "https",
   refresh_interval: 86_400_000
 ```
 
