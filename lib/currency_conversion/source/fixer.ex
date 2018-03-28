@@ -25,7 +25,7 @@ defmodule CurrencyConversion.Source.Fixer do
 
   """
   def load do
-    case HTTPotion.get(@base_url, query: %{access_key: source_api_key}) do
+    case HTTPotion.get(@base_url, query: %{access_key: get_access_key}) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Fixer.io API unavailable."}
     end
@@ -56,5 +56,5 @@ defmodule CurrencyConversion.Source.Fixer do
   defp interpret_rates([_ | _], _), do: {:error, "Fixer API Schema has changed."}
   defp interpret_rates([], accumulator), do: {:ok, accumulator}
 
-  defp get_api_key, do: Application.get_env(:currency_conversion, :source_api_key)
+  defp get_access_key, do: Application.get_env(:currency_conversion, :source_api_key)
 end
