@@ -7,7 +7,7 @@ defmodule CurrencyConversion.Source.Fixer do
 
   @behaviour CurrencyConversion.Source
 
-  @base_url "https://api.fixer.io/latest"
+  @base_url "https://data.fixer.io/api/latest"
   @doc """
   Load current currency rates from fixer.io.
 
