@@ -31,8 +31,6 @@ defmodule CurrencyConversion.Source.Fixer do
     end
   end
 
-  require IEx
-
   defp parse(body) do
     case Parser.parse(body) do
       {:ok, data} -> interpret(data)
