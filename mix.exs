@@ -27,10 +27,10 @@ defmodule CurrencyConversion.Mixfile do
   end
 
   defp deps do
-    [{:httpotion, "~> 3.1.0"},
+    [{:httpotion, "~> 3.1"},
      {:poison, "~> 3.0"},
-     {:money, "~> 1.2.1"},
-     {:mock, "~> 0.2.0", only: :test},
+     {:money, "~> 1.2"},
+     {:mock, "~> 0.2", only: :test},
      {:ex_doc, ">= 0.0.0", only: :dev},
      {:inch_ex, only: :docs},
      {:excoveralls, "~> 0.4", only: [:dev, :test]},
