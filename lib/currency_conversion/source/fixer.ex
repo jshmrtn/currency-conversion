@@ -40,18 +40,24 @@ defmodule CurrencyConversion.Source.Fixer do
 
   defp interpret(%{"base" => base, "rates" => rates = %{}}) do
     case interpret_rates(Map.to_list(rates)) do
-      {:ok, interpreted_rates} -> {:ok, %CurrencyConversion.Rates{
-        base: String.to_atom(base),
-        rates: interpreted_rates
-      }}
-      error -> error
+      {:ok, interpreted_rates} ->
+        {:ok,
+         %CurrencyConversion.Rates{
+           base: String.to_atom(base),
+           rates: interpreted_rates
+         }}
+
+      error ->
+        error
     end
   end
+
   defp interpret(_data), do: {:error, "Fixer API Schema has changed."}
 
   defp interpret_rates(rates, accumulator \\ %{})
 
-  defp interpret_rates([{currency, rate} | tail], accumulator) when is_binary(currency) and (is_float(rate) or is_integer(rate)) do
+  defp interpret_rates([{currency, rate} | tail], accumulator)
+       when is_binary(currency) and (is_float(rate) or is_integer(rate)) do
     interpret_rates(tail, Map.put(accumulator, String.to_atom(currency), rate))
   end
 
@@ -61,5 +67,7 @@ defmodule CurrencyConversion.Source.Fixer do
   defp base_url, do: get_protocol() <> "://" <> @base_endpoint
 
   defp get_access_key, do: Application.get_env(:currency_conversion, :source_api_key)
-  defp get_protocol, do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
+
+  defp get_protocol,
+    do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
 end

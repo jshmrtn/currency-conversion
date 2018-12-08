@@ -3,5 +3,5 @@ defmodule CurrencyConversion.Source do
   Behaviour for all currency rate sources.
   """
 
-  @callback load() :: {:ok, CurrencyConversion.Rates.t} | {:error, binary}
+  @callback load() :: {:ok, CurrencyConversion.Rates.t()} | {:error, binary}
 end

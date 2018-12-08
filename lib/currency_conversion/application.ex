@@ -3,10 +3,10 @@ defmodule CurrencyConversion.Application do
 
   use Application
 
-  @spec start(Application.start_type, start_args :: term) ::
-    {:ok, pid} |
-    {:ok, pid, Application.state} |
-    {:error, reason :: term}
+  @spec start(Application.start_type(), start_args :: term) ::
+          {:ok, pid}
+          | {:ok, pid, Application.state()}
+          | {:error, reason :: term}
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 

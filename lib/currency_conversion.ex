@@ -32,16 +32,25 @@ defmodule CurrencyConversion do
       %Money{amount: 7_20, currency: :CHF}
 
   """
-  @spec convert(Money.t, atom, Rates.t) :: Money.t
+  @spec convert(Money.t(), atom, Rates.t()) :: Money.t()
   def convert(amount, to_currency, rates \\ UpdateWorker.get_rates())
   def convert(%Money{amount: 0}, to_currency, _), do: Money.new(0, to_currency)
   def convert(amount = %Money{currency: currency}, currency, _), do: amount
-  def convert(%Money{amount: amount, currency: currency}, to_currency, %Rates{base: currency, rates: rates}) do
+
+  def convert(%Money{amount: amount, currency: currency}, to_currency, %Rates{
+        base: currency,
+        rates: rates
+      }) do
     Money.new(round(amount * Map.fetch!(rates, to_currency)), to_currency)
   end
-  def convert(%Money{amount: amount, currency: currency}, to_currency, %Rates{base: to_currency, rates: rates}) do
+
+  def convert(%Money{amount: amount, currency: currency}, to_currency, %Rates{
+        base: to_currency,
+        rates: rates
+      }) do
     Money.new(round(amount / Map.fetch!(rates, currency)), to_currency)
   end
+
   def convert(amount, to_currency, rates) do
     convert(convert(amount, rates.base, rates), to_currency, rates)
   end
@@ -56,7 +65,7 @@ defmodule CurrencyConversion do
       [:EUR, :CHF, :USD]
 
   """
-  @spec get_currencies(Rates.t) :: [atom]
+  @spec get_currencies(Rates.t()) :: [atom]
   def get_currencies(rates \\ UpdateWorker.get_rates())
   def get_currencies(%Rates{base: base, rates: rates}), do: [base | Map.keys(rates)]
 end

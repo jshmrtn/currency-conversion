@@ -17,7 +17,13 @@ defmodule CurrencyConversion.UpdateWorkerTest do
   test "initial load called" do
     capture_log(fn ->
       Application.stop(:currency_conversion)
-      Application.put_env(:currency_conversion, :source, CurrencyConversion.UpdateWorkerTest.Source)
+
+      Application.put_env(
+        :currency_conversion,
+        :source,
+        CurrencyConversion.UpdateWorkerTest.Source
+      )
+
       Application.ensure_started(:logger)
       Application.ensure_all_started(:currency_conversion)
     end)
