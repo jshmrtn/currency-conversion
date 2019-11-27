@@ -32,9 +32,12 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
   end
 
   defp parse(body) do
-    case Parser.parse(body) do
-      {:ok, data} -> interpret(data)
-      _ -> {:error, "JSON decoding of response body failed."}
+    try do
+      data = Parser.parse!(body, %{})
+      interpret(data)
+    rescue
+      Poison.ParseError ->
+        {:error, "JSON decoding of response body failed."}
     end
   end
 
