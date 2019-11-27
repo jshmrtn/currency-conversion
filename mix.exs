@@ -31,7 +31,7 @@ defmodule CurrencyConversion.Mixfile do
   defp deps do
     [
       {:httpotion, "~> 3.1"},
-      {:poison, "~> 3.0"},
+      {:poison, "~> 4.0"},
       {:money, "~> 1.2"},
       {:mock, "~> 0.2", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev},
