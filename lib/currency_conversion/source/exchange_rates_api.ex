@@ -25,7 +25,7 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
 
   """
   def load do
-    case HTTPotion.get(base_url(), query: %{access_key: get_access_key()}) do
+    case HTTPotion.get(base_url(), query: %{}) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Exchange Rates API unavailable."}
     end
@@ -65,8 +65,6 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
   defp interpret_rates([], accumulator), do: {:ok, accumulator}
 
   defp base_url, do: get_protocol() <> "://" <> @base_endpoint
-
-  defp get_access_key, do: Application.get_env(:currency_conversion, :source_api_key)
 
   defp get_protocol,
     do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
