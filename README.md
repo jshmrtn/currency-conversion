@@ -25,7 +25,8 @@ end
   * Default: `CurrencyConversion.Source.Fixer`
   * Restrictions: Must implement `CurrencyConversion.Source` behaviour
   * Given Implementations:
-    - `CurrencyConversion.Source.Fixer` - Fixer IO
+    - `CurrencyConversion.Source.Fixer` - [Fixer](https://fixer.io/)
+    - `CurrencyConversion.Source.ExchangeRatesApi` - [Exchange Rates API](https://exchangeratesapi.io/)
     - `CurrencyConversion.Source.Test` - Test Source
 - `refresh_interval` - Configure how often the data should be refreshed. (in ms)
   * Type: `integer`
