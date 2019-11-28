@@ -1,14 +1,14 @@
-defmodule CurrencyConversion.Source.FixerTest do
+defmodule CurrencyConversion.Source.ExchangeRatesApiTest do
   use ExUnit.Case, async: false
-  doctest CurrencyConversion.Source.Fixer, except: [load: 0]
+  doctest CurrencyConversion.Source.ExchangeRatesApi, except: [load: 0]
 
-  import CurrencyConversion.Source.Fixer
+  import CurrencyConversion.Source.ExchangeRatesApi
   import Mock
 
   @not_200_response :something
   test "load when status is not 200" do
     with_mock HTTPotion, get: fn _url, _query -> @not_200_response end do
-      assert load() == {:error, "Fixer.io API unavailable."}
+      assert load() == {:error, "Exchange Rates API unavailable."}
     end
   end
 
@@ -32,7 +32,7 @@ defmodule CurrencyConversion.Source.FixerTest do
         get: fn _url, _query ->
           %HTTPotion.Response{body: Poison.encode!(@response), status_code: 200}
         end do
-        assert load() == {:error, "Fixer API Schema has changed."}
+        assert load() == {:error, "Exchange Rates API Schema has changed."}
       end
     end
   end
