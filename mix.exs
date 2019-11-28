@@ -8,7 +8,7 @@ defmodule CurrencyConversion.Mixfile do
       app: :currency_conversion,
       docs: docs(),
       version: @version,
-      elixir: "~> 1.3",
+      elixir: "~> 1.6",
       description: description(),
       package: package(),
       build_embedded: Mix.env() == :prod,
