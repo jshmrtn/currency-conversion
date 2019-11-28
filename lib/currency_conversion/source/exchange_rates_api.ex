@@ -74,5 +74,5 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
     do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
 
   defp get_base_currency,
-    do: Application.get_env(:currency_conversion, :base_currency) || @default_base_currency
+    do: Application.get_env(:currency_conversion, :base_currency, @default_base_currency)
 end
