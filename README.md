@@ -28,6 +28,9 @@ end
     - `CurrencyConversion.Source.Fixer` - [Fixer](https://fixer.io/)
     - `CurrencyConversion.Source.ExchangeRatesApi` - [Exchange Rates API](https://exchangeratesapi.io/)
     - `CurrencyConversion.Source.Test` - Test Source
+- `base_currency` - Change the base currency that is requested when fetching rates
+  * Type: `atom`
+  * Default: `:EUR`
 - `refresh_interval` - Configure how often the data should be refreshed. (in ms)
   * Type: `integer`
   * Default: `86_400_000` (Once per Day)
