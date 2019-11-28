@@ -8,6 +8,7 @@ defmodule CurrencyConversion.Source.Fixer do
   @behaviour CurrencyConversion.Source
   @default_protocol "http"
   @base_endpoint "data.fixer.io/api/latest"
+  @default_base_currency :EUR
   @doc """
   Load current currency rates from fixer.io.
 
@@ -25,7 +26,9 @@ defmodule CurrencyConversion.Source.Fixer do
 
   """
   def load do
-    case HTTPotion.get(base_url(), query: %{access_key: get_access_key()}) do
+    case HTTPotion.get(base_url(),
+           query: %{base: get_base_currency(), access_key: get_access_key()}
+         ) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Fixer.io API unavailable."}
     end
@@ -73,4 +76,7 @@ defmodule CurrencyConversion.Source.Fixer do
 
   defp get_protocol,
     do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
+
+  defp get_base_currency,
+    do: Application.get_env(:currency_conversion, :base_currency) || @default_base_currency
 end

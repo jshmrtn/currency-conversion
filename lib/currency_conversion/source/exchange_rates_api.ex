@@ -8,6 +8,7 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
   @behaviour CurrencyConversion.Source
   @default_protocol "https"
   @base_endpoint "api.exchangeratesapi.io/latest"
+  @default_base_currency :EUR
   @doc """
   Load current currency rates from exchangeratesapi.io.
 
@@ -25,7 +26,7 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
 
   """
   def load do
-    case HTTPotion.get(base_url(), query: %{}) do
+    case HTTPotion.get(base_url(), query: %{base: get_base_currency()}) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Exchange Rates API unavailable."}
     end
@@ -71,4 +72,7 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
 
   defp get_protocol,
     do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
+
+  defp get_base_currency,
+    do: Application.get_env(:currency_conversion, :base_currency) || @default_base_currency
 end
