@@ -1,5 +1,5 @@
 defmodule CurrencyConversion.Source.FixerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   doctest CurrencyConversion.Source.Fixer, except: [load: 0]
 
   import CurrencyConversion.Source.Fixer

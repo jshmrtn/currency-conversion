@@ -1,5 +1,5 @@
 defmodule CurrencyConversion.Source.ExchangeRatesApiTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   doctest CurrencyConversion.Source.ExchangeRatesApi, except: [load: 0]
 
   import CurrencyConversion.Source.ExchangeRatesApi
