@@ -25,7 +25,10 @@ defmodule CurrencyConversion.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :httpotion], mod: {CurrencyConversion.Application, []}]
+    [
+      extra_applications: [:logger],
+      mod: {CurrencyConversion.Application, []}
+    ]
   end
 
   defp deps do
