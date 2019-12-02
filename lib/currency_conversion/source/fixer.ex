@@ -72,6 +72,7 @@ if Code.ensure_compiled?(Jason) and Code.ensure_compiled?(HTTPotion) do
       end
     end
 
+    defp interpret(%{"error" => %{"info" => info}}), do: {:error, "Fixer API Error: #{info}."}
     defp interpret(_data), do: {:error, "Fixer API Schema has changed."}
 
     defp interpret_rates(rates, accumulator \\ %{})
