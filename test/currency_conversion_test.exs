@@ -1,18 +1,25 @@
 defmodule CurrencyConversionTest do
   @moduledoc false
 
-  use ExUnit.Case, async: false
-
-  setup_all do
-    start_supervised!({CurrencyConversion.UpdateWorker, source: CurrencyConversion.Source.Test})
-    :ok
-  end
+  use ExUnit.Case, async: true
 
   doctest CurrencyConversion
 
+  defmodule Converter do
+    @moduledoc false
+
+    use CurrencyConversion, otp_app: :currency_conversion
+  end
+
+  setup_all do
+    Application.put_env(:currency_conversion, Converter, source: CurrencyConversion.Source.Test)
+    start_supervised!(Converter)
+    :ok
+  end
+
   describe "get_currencies/0" do
     test "fetches all currencies" do
-      assert CurrencyConversion.get_currencies() == [
+      assert Converter.get_currencies() == [
                :EUR,
                :AUD,
                :BGN,

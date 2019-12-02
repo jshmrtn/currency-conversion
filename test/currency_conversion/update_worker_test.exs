@@ -1,4 +1,6 @@
 defmodule CurrencyConversion.UpdateWorkerTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
 
   alias CurrencyConversion.UpdateWorker

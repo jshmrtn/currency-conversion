@@ -1,4 +1,6 @@
 defmodule CurrencyConversion.Mixfile do
+  @moduledoc false
+
   use Mix.Project
 
   @version "0.3.4"
@@ -26,8 +28,7 @@ defmodule CurrencyConversion.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger],
-      mod: {CurrencyConversion.Application, []}
+      extra_applications: [:logger]
     ]
   end
 
