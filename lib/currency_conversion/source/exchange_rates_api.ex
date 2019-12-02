@@ -6,15 +6,17 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
   alias Poison.Parser
 
   @behaviour CurrencyConversion.Source
+
   @default_protocol "https"
   @base_endpoint "api.exchangeratesapi.io/latest"
   @default_base_currency :EUR
+
   @doc """
   Load current currency rates from exchangeratesapi.io.
 
   ### Examples
 
-      iex> CurrencyConversion.Source.ExchangeRatesApi.load
+      iex> CurrencyConversion.Source.ExchangeRatesApi.load([])
       {:ok, %CurrencyConversion.Rates{base: :EUR,
         rates: %{AUD: 1.4205, BGN: 1.9558, BRL: 3.4093, CAD: 1.4048, CHF: 1.0693,
          CNY: 7.3634, CZK: 27.021, DKK: 7.4367, GBP: 0.85143, HKD: 8.3006,
@@ -25,8 +27,13 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
          ZAR: 14.31}}}
 
   """
-  def load do
-    case HTTPotion.get(base_url(), query: %{base: get_base_currency()}) do
+  @impl CurrencyConversion.Source
+  def load(opts) do
+    base_currency = Keyword.get(opts, :base_currency, @default_base_currency)
+    protocol = Keyword.get(opts, :source_protocol, @default_protocol)
+    base_url = protocol <> "://" <> @base_endpoint
+
+    case HTTPotion.get(base_url, query: %{base: base_currency}) do
       %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
       _ -> {:error, "Exchange Rates API unavailable."}
     end
@@ -65,12 +72,4 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
 
   defp interpret_rates([_ | _], _), do: {:error, "Exchange Rates API Schema has changed."}
   defp interpret_rates([], accumulator), do: {:ok, accumulator}
-
-  defp base_url, do: get_protocol() <> "://" <> @base_endpoint
-
-  defp get_protocol,
-    do: Application.get_env(:currency_conversion, :source_protocol, @default_protocol)
-
-  defp get_base_currency,
-    do: Application.get_env(:currency_conversion, :base_currency, @default_base_currency)
 end

@@ -47,7 +47,7 @@ defmodule CurrencyConversion.Source.Test do
 
   ### Examples
 
-      iex> CurrencyConversion.Source.Test.load
+      iex> CurrencyConversion.Source.Test.load([])
       {:ok, %CurrencyConversion.Rates{base: :EUR,
         rates: %{AUD: 1.4205, BGN: 1.9558, BRL: 3.4093, CAD: 1.4048, CHF: 1.0693,
          CNY: 7.3634, CZK: 27.021, DKK: 7.4367, GBP: 0.85143, HKD: 8.3006,
@@ -58,8 +58,8 @@ defmodule CurrencyConversion.Source.Test do
          ZAR: 14.31}}}
 
   """
-  def load do
-    rates = Application.get_env(:currency_conversion, :test_rates, @default_rates)
+  def load(opts) do
+    rates = Keyword.get(opts, :test_rates, @default_rates)
     {:ok, cast(rates)}
   end
 

@@ -48,7 +48,7 @@ defmodule CurrencyConversion.UpdateWorker do
     table_identifier = Keyword.fetch!(opts, :table_identifier)
     source = Keyword.get(opts, :source, CurrencyConversion.Source.Fixer)
 
-    case source.load() do
+    case source.load(opts) do
       {:ok, rates} ->
         Logger.info("Refreshed currency rates.")
         Logger.debug(inspect(rates))

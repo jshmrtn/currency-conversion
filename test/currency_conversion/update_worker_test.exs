@@ -1,18 +1,21 @@
 defmodule CurrencyConversion.UpdateWorkerTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
   alias CurrencyConversion.UpdateWorker
 
   doctest UpdateWorker
-
-  import Mock
 
   defmodule Source do
     @moduledoc false
 
     @behaviour CurrencyConversion.Source
 
-    def load do
+    def load(opts) do
+      case Keyword.fetch(opts, :caller_pid) do
+        {:ok, pid} -> send(pid, :load)
+        _ -> nil
+      end
+
       {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{}}}
     end
   end
@@ -25,21 +28,13 @@ defmodule CurrencyConversion.UpdateWorkerTest do
   end
 
   test "refresh load called", %{test: test_name} do
-    test_pid = self()
     name = Module.concat(__MODULE__, test_name)
 
-    with_mock CurrencyConversion.Source.Test,
-      load: fn ->
-        send(test_pid, :load)
-        {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{}}}
-      end do
-      start_supervised!(
-        {UpdateWorker,
-         source: CurrencyConversion.Source.Test, name: name, refresh_interval: 1_000}
-      )
+    start_supervised!(
+      {UpdateWorker, source: Source, name: name, refresh_interval: 1_000, caller_pid: self()}
+    )
 
-      assert_received :load
-      assert_receive :load, 1_100
-    end
+    assert_received :load
+    assert_receive :load, 1_100
   end
 end
