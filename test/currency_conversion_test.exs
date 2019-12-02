@@ -1,5 +1,13 @@
 defmodule CurrencyConversionTest do
-  use ExUnit.Case, async: true
+  @moduledoc false
+
+  use ExUnit.Case, async: false
+
+  setup_all do
+    start_supervised!({CurrencyConversion.UpdateWorker, source: CurrencyConversion.Source.Test})
+    :ok
+  end
+
   doctest CurrencyConversion
 
   describe "get_currencies/0" do
