@@ -46,7 +46,7 @@ defmodule CurrencyConversion.UpdateWorker do
   @spec refresh(opts :: Keyword.t()) :: :ok | {:error, binary}
   defp refresh(opts) do
     table_identifier = Keyword.fetch!(opts, :table_identifier)
-    source = Keyword.get(opts, :source, CurrencyConversion.Source.Fixer)
+    source = Keyword.get(opts, :source, CurrencyConversion.Source.ExchangeRatesApi)
 
     case source.load(opts) do
       {:ok, rates} ->

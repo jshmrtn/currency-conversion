@@ -62,7 +62,7 @@ defmodule CurrencyConversion do
 
       @impl Supervisor
       def init(_init_arg) do
-        config = Application.get_env(@otp_app, __MODULE__)
+        config = Application.get_env(@otp_app, __MODULE__, [])
 
         Supervisor.init([{UpdateWorker, config ++ [name: @update_worker]}], strategy: :one_for_one)
       end

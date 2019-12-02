@@ -51,7 +51,7 @@ end
 
 - `source` - Configure which Data Source Should Be Used.
   * Type: `atom`
-  * Default: `CurrencyConversion.Source.Fixer`
+  * Default: `CurrencyConversion.Source.ExchangeRatesApi`
   * Restrictions: Must implement `CurrencyConversion.Source` behaviour
   * Given Implementations:
     - `CurrencyConversion.Source.Fixer` - [Fixer](https://fixer.io/)
