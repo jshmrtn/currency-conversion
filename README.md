@@ -14,7 +14,9 @@ The package can be installed by adding `currency_conversion` to your list of dep
 ```elixir
 def deps do
   [
-    {:currency_conversion, "~> 0.3"}
+    {:currency_conversion, "~> 0.3"},
+    {:jason, "~> 1.1"}, # When usig Fixer / Exchange Rates API,
+    {:httpotion, "~> 3.1"}, # When usig Fixer / Exchange Rates API
   ]
 end
 ```

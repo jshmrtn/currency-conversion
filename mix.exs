@@ -16,7 +16,11 @@ defmodule CurrencyConversion.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: [tool: ExCoveralls]
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.travis": :test
+      ]
     ]
   end
 
@@ -34,14 +38,14 @@ defmodule CurrencyConversion.Mixfile do
 
   defp deps do
     [
-      {:httpotion, "~> 3.1"},
-      {:jason, "~> 1.1"},
       {:money, "~> 1.2"},
-      {:mock, "~> 0.2", only: :test},
-      {:ex_doc, ">= 0.0.0", only: :dev},
-      {:excoveralls, "~> 0.4", only: [:dev, :test]},
+      {:httpotion, "~> 3.1", optional: true},
+      {:jason, "~> 1.1", optional: true},
+      {:mock, "~> 0.2", only: [:test]},
+      {:ex_doc, ">= 0.0.0", only: [:dev], runtime: false},
+      {:excoveralls, "~> 0.4", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0-rc", only: [:dev], runtime: false},
-      {:credo, "~> 0.5", only: [:dev, :test]}
+      {:credo, "~> 0.5", only: [:dev, :test], runtime: false}
     ]
   end
 
