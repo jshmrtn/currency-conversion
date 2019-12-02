@@ -35,13 +35,13 @@ defmodule CurrencyConversion.Mixfile do
   defp deps do
     [
       {:httpotion, "~> 3.1"},
-      {:poison, "~> 4.0"},
+      {:jason, "~> 1.1"},
       {:money, "~> 1.2"},
       {:mock, "~> 0.2", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:inch_ex, only: :docs},
+      {:inch_ex, ">= 0.0.0", only: :docs},
       {:excoveralls, "~> 0.4", only: [:dev, :test]},
-      {:dialyxir, "~> 0.4", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0-rc", only: [:dev], runtime: false},
       {:credo, "~> 0.5", only: [:dev, :test]}
     ]
   end

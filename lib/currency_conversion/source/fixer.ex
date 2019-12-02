@@ -3,8 +3,6 @@ defmodule CurrencyConversion.Source.Fixer do
   Currency Conversion Source for http://fixer.io/
   """
 
-  alias Poison.Parser
-
   @behaviour CurrencyConversion.Source
 
   @default_protocol "http"
@@ -41,10 +39,10 @@ defmodule CurrencyConversion.Source.Fixer do
   end
 
   defp parse(body) do
-    data = Parser.parse!(body, %{})
+    data = Jason.decode!(body)
     interpret(data)
   rescue
-    Poison.ParseError ->
+    Jason.DecodeError ->
       {:error, "JSON decoding of response body failed."}
   end
 

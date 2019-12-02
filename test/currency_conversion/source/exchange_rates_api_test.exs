@@ -33,7 +33,7 @@ defmodule CurrencyConversion.Source.ExchangeRatesApiTest do
     test "load when JSON fomat is wrong with " <> inspect(response) do
       with_mock HTTPotion,
         get: fn _url, _query ->
-          %HTTPotion.Response{body: Poison.encode!(@response), status_code: 200}
+          %HTTPotion.Response{body: Jason.encode!(@response), status_code: 200}
         end do
         assert load([]) == {:error, "Exchange Rates API Schema has changed."}
       end
@@ -44,7 +44,7 @@ defmodule CurrencyConversion.Source.ExchangeRatesApiTest do
   test "load correctly" do
     with_mock HTTPotion,
       get: fn _url, _query ->
-        %HTTPotion.Response{body: Poison.encode!(@correctly_formatted_json), status_code: 200}
+        %HTTPotion.Response{body: Jason.encode!(@correctly_formatted_json), status_code: 200}
       end do
       assert load([]) == {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{EUR: 7.2}}}
     end
