@@ -35,13 +35,11 @@ defmodule CurrencyConversion.Source.Fixer do
   end
 
   defp parse(body) do
-    try do
-      data = Parser.parse!(body, %{})
-      interpret(data)
-    rescue
-      Poison.ParseError ->
-        {:error, "JSON decoding of response body failed."}
-    end
+    data = Parser.parse!(body, %{})
+    interpret(data)
+  rescue
+    Poison.ParseError ->
+      {:error, "JSON decoding of response body failed."}
   end
 
   defp interpret(%{"base" => base, "rates" => rates = %{}}) do
