@@ -3,8 +3,6 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
   Currency Conversion Source for http://exchangeratesapi.io/
   """
 
-  alias Poison.Parser
-
   @behaviour CurrencyConversion.Source
 
   @default_protocol "https"
@@ -40,10 +38,10 @@ defmodule CurrencyConversion.Source.ExchangeRatesApi do
   end
 
   defp parse(body) do
-    data = Parser.parse!(body, %{})
+    data = Jason.decode!(body)
     interpret(data)
   rescue
-    Poison.ParseError ->
+    Jason.DecodeError ->
       {:error, "JSON decoding of response body failed."}
   end
 
