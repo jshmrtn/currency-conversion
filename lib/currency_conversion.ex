@@ -73,19 +73,7 @@ defmodule CurrencyConversion do
       ### Example
 
           iex> #{__MODULE__}.convert(Money.new(7_00, :CHF), :USD)
-          %Money{amount: 10_50, currency: :USD}
-
-          iex> #{__MODULE__}.convert(Money.new(7_00, :EUR), :USD)
-          %Money{amount: 5_25, currency: :USD}
-
-          iex> #{__MODULE__}.convert(Money.new(7_00, :CHF), :EUR)
-          %Money{amount: 14_00, currency: :EUR}
-
-          iex> #{__MODULE__}.convert(Money.new(0, :CHF), :EUR)
-          %Money{amount: 0, currency: :EUR}
-
-          iex> #{__MODULE__}.convert(Money.new(7_20, :CHF), :CHF)
-          %Money{amount: 7_20, currency: :CHF}
+          %Money{amount: 7_03, currency: :USD}
 
       """
       @impl unquote(__MODULE__)
