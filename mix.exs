@@ -39,7 +39,6 @@ defmodule CurrencyConversion.Mixfile do
       {:money, "~> 1.2"},
       {:mock, "~> 0.2", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:inch_ex, ">= 0.0.0", only: :docs},
       {:excoveralls, "~> 0.4", only: [:dev, :test]},
       {:dialyxir, "~> 1.0-rc", only: [:dev], runtime: false},
       {:credo, "~> 0.5", only: [:dev, :test]}
