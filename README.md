@@ -3,7 +3,6 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/jshmrtn/currency-conversion/master/LICENSE)
 [![Build Status](https://travis-ci.org/jshmrtn/currency-conversion.svg?branch=master)](https://travis-ci.org/jshmrtn/currency-conversion)
 [![Hex.pm Version](https://img.shields.io/hexpm/v/currency_conversion.svg?style=flat)](https://hex.pm/packages/currency_conversion)
-[![InchCI](https://inch-ci.org/github/jshmrtn/currency-conversion.svg?branch=master)](https://inch-ci.org/github/jshmrtncurrency-conversion)
 [![Coverage Status](https://coveralls.io/repos/github/jshmrtn/currency-conversion/badge.svg?branch=master)](https://coveralls.io/github/jshmrtn/currency-conversion?branch=master)
 
 Convert Money Amounts between currencies. This library uses an OTP worker to save current conversion rates.
@@ -15,7 +14,9 @@ The package can be installed by adding `currency_conversion` to your list of dep
 ```elixir
 def deps do
   [
-    {:currency_conversion, "~> 0.3"}
+    {:currency_conversion, "~> 0.3"},
+    {:jason, "~> 1.1"}, # When usig Fixer / Exchange Rates API,
+    {:httpotion, "~> 3.1"}, # When usig Fixer / Exchange Rates API
   ]
 end
 ```
