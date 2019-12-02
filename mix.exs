@@ -20,6 +20,9 @@ defmodule CurrencyConversion.Mixfile do
       preferred_cli_env: [
         coveralls: :test,
         "coveralls.travis": :test
+      ],
+      dialyzer: [
+        plt_add_apps: [:httpotion, :jason]
       ]
     ]
   end

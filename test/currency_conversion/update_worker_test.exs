@@ -22,11 +22,28 @@ defmodule CurrencyConversion.UpdateWorkerTest do
     end
   end
 
+  defmodule FailedSource do
+    @moduledoc false
+
+    @behaviour CurrencyConversion.Source
+
+    def load(_opts) do
+      {:error, "foo"}
+    end
+  end
+
   test "initial load called", %{test: test_name} do
     name = Module.concat(__MODULE__, test_name)
     start_supervised!({UpdateWorker, source: Source, name: name})
 
     assert UpdateWorker.get_rates(name) == %CurrencyConversion.Rates{base: :CHF, rates: %{}}
+  end
+
+  test "initial load fails", %{test: test_name} do
+    name = Module.concat(__MODULE__, test_name)
+
+    {:error, {{:error, "foo"}, _}} =
+      start_supervised({UpdateWorker, source: FailedSource, name: name})
   end
 
   test "refresh load called", %{test: test_name} do

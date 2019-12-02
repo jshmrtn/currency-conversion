@@ -12,7 +12,7 @@ defmodule CurrencyConversion.UpdateWorker do
   Starts the update worker.
   """
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, name: Keyword.get(opts, :name, __MODULE__))
+    GenServer.start_link(__MODULE__, opts, name: Keyword.fetch!(opts, :name))
   end
 
   @impl GenServer
@@ -66,7 +66,7 @@ defmodule CurrencyConversion.UpdateWorker do
   end
 
   @spec get_rates(worker_name :: atom()) :: Rates.t()
-  def get_rates(worker_name \\ __MODULE__),
+  def get_rates(worker_name),
     do:
       worker_name
       |> table_name
