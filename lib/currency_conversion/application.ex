@@ -3,18 +3,19 @@ defmodule CurrencyConversion.Application do
 
   use Application
 
+  alias CurrencyConversion.UpdateWorker
+
   @spec start(Application.start_type(), start_args :: term) ::
           {:ok, pid}
           | {:ok, pid, Application.state()}
           | {:error, reason :: term}
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    children = [
-      worker(CurrencyConversion.UpdateWorker, [], restart: :permanent)
-    ]
-
-    opts = [strategy: :one_for_one, name: CurrencyConversion.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(
+      [
+        {UpdateWorker, Application.get_all_env(:currency_conversion)}
+      ],
+      strategy: :one_for_one,
+      name: CurrencyConversion.Supervisor
+    )
   end
 end

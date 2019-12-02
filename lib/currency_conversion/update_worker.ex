@@ -6,46 +6,58 @@ defmodule CurrencyConversion.UpdateWorker do
 
   require Logger
 
-  @update_worker CurrencyConversion.UpdateWorker
+  @default_refresh_interval 1000 * 60 * 60 * 24
 
   @doc """
   Starts the update worker.
   """
-  def start_link do
-    GenServer.start_link(__MODULE__, :ok, name: @update_worker)
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts, name: Keyword.get(opts, :name, __MODULE__))
   end
 
-  @spec init(:ok) :: {:ok, Rates.t()} | {:stop, any}
-  def init(:ok) do
-    Process.send_after(self(), :refresh, get_refresh_interval())
+  @impl GenServer
+  def init(opts) do
+    table_identifier =
+      opts
+      |> Keyword.get(:name, __MODULE__)
+      |> table_name
+      |> :ets.new([:protected, :ordered_set, :named_table])
 
-    case refresh() do
-      {:ok, rates} -> {:ok, rates}
+    opts = Keyword.put(opts, :table_identifier, table_identifier)
+
+    refresh_interval = Keyword.get(opts, :refresh_interval, @default_refresh_interval)
+
+    case refresh(opts) do
+      :ok -> {:ok, opts, refresh_interval}
       {:error, binary} -> {:stop, {:error, binary}}
     end
   end
 
-  @spec handle_call(:get, any, Rates.t()) :: {:reply, Rates.t(), Rates.t()}
-  def handle_call(:get, _options, state) do
-    {:reply, state, state}
-  end
+  @impl GenServer
+  def handle_info(:timeout, opts) do
+    refresh_interval = Keyword.get(opts, :refresh_interval, @default_refresh_interval)
 
-  @spec handle_info(:refresh, Rates.t()) :: {:noreply, Rates.t()}
-  def handle_info(:refresh, state) do
-    Process.send_after(self(), :refresh, get_refresh_interval())
-
-    case refresh() do
-      {:ok, rates} -> {:noreply, rates}
-      {:error, _} -> {:noreply, state}
+    case refresh(opts) do
+      :ok -> {:noreply, opts, refresh_interval}
+      {:error, binary} -> {:stop, {:error, binary}}
     end
   end
 
-  defp refresh do
-    case get_source().load() do
+  @spec refresh(opts :: Keyword.t()) :: :ok | {:error, binary}
+  defp refresh(opts) do
+    table_identifier = Keyword.fetch!(opts, :table_identifier)
+    source = Keyword.get(opts, :source, CurrencyConversion.Source.Fixer)
+
+    case source.load() do
       {:ok, rates} ->
         Logger.info("Refreshed currency rates.")
         Logger.debug(inspect(rates))
-        {:ok, rates}
+
+        for entry <- Rates.to_list(rates) do
+          :ets.insert(table_identifier, entry)
+        end
+
+        :ok
 
       {:error, error} ->
         Logger.error("An error occured while rereshing currency rates. " <> inspect(error))
@@ -53,15 +65,14 @@ defmodule CurrencyConversion.UpdateWorker do
     end
   end
 
-  @spec get_source() :: atom
-  defp get_source,
-    do: Application.get_env(:currency_conversion, :source, CurrencyConversion.Source.Fixer)
+  @spec get_rates(worker_name :: atom()) :: Rates.t()
+  def get_rates(worker_name \\ __MODULE__),
+    do:
+      worker_name
+      |> table_name
+      |> :ets.tab2list()
+      |> Rates.from_list()
 
-  # Default: One Day
-  @spec get_refresh_interval() :: integer
-  defp get_refresh_interval,
-    do: Application.get_env(:currency_conversion, :refresh_interval, 1000 * 60 * 60 * 24)
-
-  @spec get_rates() :: Rates.t()
-  def get_rates, do: GenServer.call(@update_worker, :get)
+  @spec table_name(worker_name :: atom()) :: atom()
+  defp table_name(worker_name), do: Module.concat(worker_name, Table)
 end
