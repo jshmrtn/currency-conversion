@@ -37,7 +37,7 @@ end
 - `test_rates` - Configure rates for `CurrencyConversion.Source.Test` source
   * Type: `{atom, %{atom: float}}`
   * Default: see `CurrencyConversion.Source.Test.@default_rates`
-  * Example: `{:EUR, %{CHF: 7}}`
+  * Example: `{:EUR, %{CHF: 7.0}}`
 
 ```elixir
 config :currency_conversion,
