@@ -27,9 +27,10 @@ defmodule CurrencyConversion.UpdateWorker do
 
     refresh_interval = Keyword.get(opts, :refresh_interval, @default_refresh_interval)
 
-    case refresh(opts) do
-      :ok -> {:ok, opts, refresh_interval}
-      {:error, binary} -> {:stop, {:error, binary}}
+    case {refresh(opts), refresh_interval} do
+      {:ok, :manual} -> {:ok, opts}
+      {:ok, _} -> {:ok, opts, refresh_interval}
+      {{:error, binary}, _} -> {:stop, {:error, binary}}
     end
   end
 
@@ -37,10 +38,26 @@ defmodule CurrencyConversion.UpdateWorker do
   def handle_info(:timeout, opts) do
     refresh_interval = Keyword.get(opts, :refresh_interval, @default_refresh_interval)
 
-    case refresh(opts) do
-      :ok -> {:noreply, opts, refresh_interval}
-      {:error, binary} -> {:stop, {:error, binary}}
+    case {refresh(opts), refresh_interval} do
+      {:ok, :manual} -> {:noreply, opts}
+      {:ok, _} -> {:noreply, opts, refresh_interval}
+      {{:error, binary}, _} -> {:stop, {:error, binary}}
     end
+  end
+
+  @impl GenServer
+  def handle_call(:refresh, _from, opts) do
+    opts
+    |> Keyword.get(:refresh_interval, @default_refresh_interval)
+    |> case do
+      :manual -> {:reply, refresh(opts), opts}
+      refresh_interval -> {:reply, refresh(opts), opts, refresh_interval}
+    end
+  end
+
+  @spec refresh_rates(worker_name :: atom()) :: :ok | {:error, term}
+  def refresh_rates(worker_name) do
+    GenServer.call(worker_name, :refresh)
   end
 
   @spec refresh(opts :: Keyword.t()) :: :ok | {:error, binary}

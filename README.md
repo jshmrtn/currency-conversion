@@ -60,9 +60,10 @@ end
 - `base_currency` - Change the base currency that is requested when fetching rates
   * Type: `atom`
   * Default: `:EUR`
-- `refresh_interval` - Configure how often the data should be refreshed. (in ms)
-  * Type: `integer`
+- `refresh_interval` - Configure how often the data should be refreshed (in ms) or turn auto-refresh off.
+  * Type: `integer | :manual`
   * Default: `86_400_000` (Once per Day)
+  * `:manual` turns auto-refresh off, do refresh yourself
 - `test_rates` - Configure rates for `CurrencyConversion.Source.Test` source
   * Type: `{atom, %{atom: float}}`
   * Default: see `CurrencyConversion.Source.Test.@default_rates`
@@ -95,11 +96,27 @@ config :my_app, MyApp.CurrencyConversion,
 
 ## Usage
 
-Only the function `CurrencyConversion.convert/3` is exposed to the user. The library [money](https://github.com/liuggio/money) is used to represent money amounts.
+Only the callbacks from `CurrencyConversion` are exposed to the user. The library
+[money](https://github.com/liuggio/money) is used to represent money amounts.
 
 ### Example
 
+Change 7 swiss franks to dollars:
+
 ```elixir
-iex> CurrencyConversion.convert(Money.new(7_00, :CHF), :USD)
+iex> MyApp.CurrencyConversion.convert(Money.new(7_00, :CHF), :USD)
 %Money{amount: 10_50, currency: :USD}
 ```
+
+Get supported currencies:
+
+```elixir
+iex> MyApp.CurrencyConversion.get_currencies()
+[:EUR, :USD, :CHF, ...]
+```
+
+Manually refresh exchange rates:
+
+```elixir
+iex> MyApp.CurrencyConversion.refresh_rates()
+:ok
