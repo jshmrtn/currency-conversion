@@ -27,7 +27,19 @@ defmodule CurrencyConversion.UpdateWorker do
 
     refresh_interval = Keyword.get(opts, :refresh_interval, @default_refresh_interval)
 
-    case {refresh(opts), refresh_interval} do
+    initial_load =
+      case Keyword.fetch(opts, :seed) do
+        {:ok, {module, function, arity}} when arity == 1 ->
+          Function.capture(module, function, arity)
+
+        {:ok, function} when is_function(function, 1) ->
+          function
+
+        :error ->
+          &load_from_source/1
+      end
+
+    case {refresh(opts, initial_load), refresh_interval} do
       {:ok, :manual} -> {:ok, opts}
       {:ok, _} -> {:ok, opts, refresh_interval}
       {{:error, binary}, _} -> {:stop, {:error, binary}}
@@ -60,12 +72,18 @@ defmodule CurrencyConversion.UpdateWorker do
     GenServer.call(worker_name, :refresh)
   end
 
-  @spec refresh(opts :: Keyword.t()) :: :ok | {:error, binary}
-  defp refresh(opts) do
-    table_identifier = Keyword.fetch!(opts, :table_identifier)
-    source = Keyword.get(opts, :source, CurrencyConversion.Source.ExchangeRatesApi)
+  defp load_from_source(opts) do
+    Keyword.get(opts, :source, CurrencyConversion.Source.ExchangeRatesApi).load(opts)
+  end
 
-    case source.load(opts) do
+  @spec refresh(
+          opts :: Keyword.t(),
+          load_callback :: (Keyword.t() -> {:ok, Rates.t()} | {:error, binary})
+        ) :: :ok | {:error, binary}
+  defp refresh(opts, load_callback \\ &load_from_source/1) do
+    table_identifier = Keyword.fetch!(opts, :table_identifier)
+
+    case load_callback.(opts) do
       {:ok, rates} ->
         Logger.info("Refreshed currency rates.")
         Logger.debug(inspect(rates))

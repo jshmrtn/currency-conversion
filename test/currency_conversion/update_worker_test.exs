@@ -37,6 +37,10 @@ defmodule CurrencyConversion.UpdateWorkerTest do
     end
   end
 
+  def ok_rates(_opts) do
+    {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{}}}
+  end
+
   describe "init" do
     test "initial load called", %{test: test_name} do
       name = Module.concat(__MODULE__, test_name)
@@ -73,6 +77,68 @@ defmodule CurrencyConversion.UpdateWorkerTest do
       assert_received :load
       refute_receive :load
     end
+
+    test "seed calls fn", %{test: test_name} do
+      name = Module.concat(__MODULE__, test_name)
+
+      start_supervised!(
+        {UpdateWorker,
+         source: FailedSource,
+         name: name,
+         refresh_interval: :manual,
+         caller_pid: self(),
+         seed: &ok_rates/1}
+      )
+
+      refute_received :load
+    end
+
+    test "seed calls mfa tuple", %{test: test_name} do
+      name = Module.concat(__MODULE__, test_name)
+
+      start_supervised!(
+        {UpdateWorker,
+         source: FailedSource,
+         name: name,
+         refresh_interval: :manual,
+         caller_pid: self(),
+         seed: {__MODULE__, :ok_rates, 1}}
+      )
+
+      refute_received :load
+    end
+
+    test "seed does not call load but refreshes later", %{test: test_name} do
+      name = Module.concat(__MODULE__, test_name)
+
+      start_supervised!(
+        {UpdateWorker,
+         source: Source,
+         name: name,
+         refresh_interval: 100,
+         caller_pid: self(),
+         seed: fn _opts -> {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{}}} end}
+      )
+
+      refute_received :load
+      assert_receive :load, 110
+    end
+
+    test "seed does not call load and does not refresh manual", %{test: test_name} do
+      name = Module.concat(__MODULE__, test_name)
+
+      start_supervised!(
+        {UpdateWorker,
+         source: Source,
+         name: name,
+         refresh_interval: :manual,
+         caller_pid: self(),
+         seed: fn _opts -> {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{}}} end}
+      )
+
+      refute_received :load
+      refute_receive :load
+    end
   end
 
   describe "refresh_rates/1" do
@@ -81,7 +147,12 @@ defmodule CurrencyConversion.UpdateWorkerTest do
 
       start_supervised!({UpdateWorker, [name: name, caller_pid: self()] ++ Enum.to_list(tags)})
 
-      assert_received :load
+      # Discard Initial load
+      receive do
+        :load -> nil
+      after
+        0 -> nil
+      end
 
       {:ok, worker_name: name}
     end
@@ -102,22 +173,24 @@ defmodule CurrencyConversion.UpdateWorkerTest do
       assert_receive :load, 110
     end
 
-    # TODO: The following two test can be implemented easily as soon as the
-    # `seed` config is implemented
-    # @tag source: FailedSource, refresh_interval: :manual
-    # test "error with manual does not refresh", %{worker_name: worker_name} do
-    #   assert {:error, "foo"} = UpdateWorker.refresh_rates(worker_name)
+    @tag source: FailedSource,
+         refresh_interval: :manual,
+         seed: {__MODULE__, :ok_rates, 1}
+    test "error with manual does not refresh", %{worker_name: worker_name} do
+      assert {:error, "foo"} = UpdateWorker.refresh_rates(worker_name)
 
-    #   assert_received :load
-    #   refute_receive :load
-    # end
+      assert_received :load
+      refute_receive :load
+    end
 
-    # @tag source: FailedSource, refresh_interval: 100
-    # test "error with interval does refresh", %{worker_name: worker_name} do
-    #   assert {:error, "foo"} = UpdateWorker.refresh_rates(worker_name)
+    @tag source: FailedSource,
+         refresh_interval: 100,
+         seed: {__MODULE__, :ok_rates, 1}
+    test "error with interval does refresh", %{worker_name: worker_name} do
+      assert {:error, "foo"} = UpdateWorker.refresh_rates(worker_name)
 
-    #   assert_received :load
-    #   assert_receive :load, 110
-    # end
+      assert_received :load
+      assert_receive :load, 110
+    end
   end
 end
