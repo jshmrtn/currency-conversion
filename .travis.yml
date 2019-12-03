@@ -1,9 +1,9 @@
 language: elixir
 sudo: false
 elixir:
-  - 1.6
-  - 1.8.2
-  - 1.9.4
+  - 1.7
+  - 1.8
+  - 1.9
 otp_release:
   - 21.3
 after_script:

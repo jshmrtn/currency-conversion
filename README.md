@@ -64,6 +64,9 @@ end
   * Type: `integer | :manual`
   * Default: `86_400_000` (Once per Day)
   * `:manual` turns auto-refresh off, do refresh yourself
+- `seed` - Deliver the rates data manually.
+  * Type: `(Keyword.t() -> {:ok, CurrencyConversion.Rates.t()} | {:error, binary}) | {module :: atom, function :: atom, arity :: 1}`
+  * Default: Load from `source`
 - `test_rates` - Configure rates for `CurrencyConversion.Source.Test` source
   * Type: `{atom, %{atom: float}}`
   * Default: see `CurrencyConversion.Source.Test.@default_rates`
