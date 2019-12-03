@@ -90,4 +90,10 @@ defmodule CurrencyConversionTest do
              ]
     end
   end
+
+  describe "refresh_rates/0" do
+    test "refreshes rates" do
+      assert Converter.refresh_rates() == :ok
+    end
+  end
 end

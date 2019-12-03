@@ -56,4 +56,14 @@ defmodule CurrencyConversion.UpdateWorkerTest do
     assert_received :load
     assert_receive :load, 1_100
   end
+
+  test "manual refresh_inverval does not refresh", %{test: test_name} do
+    name = Module.concat(__MODULE__, test_name)
+
+    start_supervised!(
+      {UpdateWorker, source: Source, name: name, refresh_interval: :manual, caller_pid: self()}
+    )
+
+    refute_received :load
+  end
 end

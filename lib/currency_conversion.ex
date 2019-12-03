@@ -86,13 +86,26 @@ defmodule CurrencyConversion do
 
       ### Examples
 
-          iex> CurrencyConversion.get_currencies()
+          iex> #{__MODULE__}.get_currencies()
           [:EUR, :CHF, :USD]
 
       """
       @impl unquote(__MODULE__)
       def get_currencies do
         unquote(__MODULE__).get_currencies(UpdateWorker.get_rates(@update_worker))
+      end
+
+      @doc """
+      Refresh exchange rates
+
+      ### Examples
+
+      iex> #{__MODULE__}.refresh_rates()
+      :ok
+      """
+      @spec refresh_rates() :: :ok | {:error, string}
+      def refresh_rates do
+        unquote(__MODULE__).refresh_rates(UpdateWorker.refresh_rates(@update_worker))
       end
     end
   end
@@ -125,4 +138,9 @@ defmodule CurrencyConversion do
   @doc false
   @spec get_currencies(rates :: Rates.t()) :: [atom]
   def get_currencies(%Rates{base: base, rates: rates}), do: [base | Map.keys(rates)]
+
+  @doc false
+  @spec refresh_rates(:ok | {:error, string}) :: :ok | {:error, string}
+  def refresh_rates(:ok), do: :ok
+  def refresh_rates({:error, error}), do: {:error, error}
 end
