@@ -30,8 +30,60 @@ defmodule CurrencyConversion do
 
   """
 
+  @convert_doc """
+  Convert from currency A to B.
+
+  ### Example
+
+      iex> convert(Money.new(7_00, :CHF), :USD)
+      %Money{amount: 7_03, currency: :USD}
+
+  """
+  @doc @convert_doc
   @callback convert(amount :: Money.t(), to_currency :: atom) :: Money.t()
+
+  @get_currencies_doc """
+  Get all currencies
+
+  ### Examples
+
+      iex> get_currencies()
+      [:EUR, :CHF, :USD, ...]
+
+  """
+  @doc @get_currencies_doc
   @callback get_currencies :: [atom]
+
+  @get_rates_doc """
+  Get current exchange rates
+
+  ### Examples
+
+      iex> get_rates()
+      %CurrencyConversion.Rates{
+          base: :EUR,
+          rates: %{
+            AUD: 1.4205,
+            BGN: 1.9558,
+            ...
+          }
+        }
+
+  """
+  @doc @get_rates_doc
+  @callback get_rates :: CurrencyConversion.Rates.t()
+
+  @refresh_rates_doc """
+  Refresh exchange rates
+
+  ### Examples
+
+      iex> refresh_rates()
+      :ok
+
+  """
+  @doc @refresh_rates_doc
+  @callback refresh_rates :: :ok | {:error, term}
 
   defmacro __using__(opts) do
     otp_app = Keyword.fetch!(opts, :otp_app)
@@ -67,92 +119,26 @@ defmodule CurrencyConversion do
         Supervisor.init([{UpdateWorker, config ++ [name: @update_worker]}], strategy: :one_for_one)
       end
 
-      @doc """
-      Convert from currency A to B.
-
-      ### Example
-
-          iex> #{__MODULE__}.convert(Money.new(7_00, :CHF), :USD)
-          %Money{amount: 7_03, currency: :USD}
-
-      """
+      @doc unquote(@convert_doc)
       @impl unquote(__MODULE__)
       def convert(amount, to_currency) do
         unquote(__MODULE__).convert(amount, to_currency, UpdateWorker.get_rates(@update_worker))
       end
 
-      @doc """
-      Get all currencies
-
-      ### Examples
-
-          iex> #{__MODULE__}.get_currencies()
-          [:EUR, :CHF, :USD]
-
-      """
+      @doc unquote(@get_currencies_doc)
       @impl unquote(__MODULE__)
       def get_currencies do
         unquote(__MODULE__).get_currencies(UpdateWorker.get_rates(@update_worker))
       end
 
-      @doc """
-      Get current exchange rates
-
-      ### Examples
-
-          iex> #{__MODULE__}.get_rates()
-          %CurrencyConversion.Rates{
-              base: :EUR,
-              rates: %{
-                AUD: 1.4205,
-                BGN: 1.9558,
-                BRL: 3.4093,
-                CAD: 1.4048,
-                CHF: 1.0693,
-                CNY: 7.3634,
-                CZK: 27.021,
-                DKK: 7.4367,
-                GBP: 0.85143,
-                HKD: 8.3006,
-                HRK: 7.48,
-                HUF: 310.98,
-                IDR: 14316.0,
-                ILS: 4.0527,
-                INR: 72.957,
-                JPY: 122.4,
-                KRW: 1248.1,
-                MXN: 22.476,
-                MYR: 4.739,
-                NOK: 8.9215,
-                NZD: 1.4793,
-                PHP: 53.373,
-                PLN: 4.3435,
-                RON: 4.4943,
-                RUB: 64.727,
-                SEK: 9.466,
-                SGD: 1.5228,
-                THB: 37.776,
-                TRY: 4.1361,
-                USD: 1.07,
-                ZAR: 14.31
-              }
-            }
-
-      """
+      @doc unquote(@get_rates_doc)
       @impl unquote(__MODULE__)
       def get_rates do
         UpdateWorker.get_rates(@update_worker)
       end
 
-      @doc """
-      Refresh exchange rates
-
-      ### Examples
-
-      iex> #{__MODULE__}.refresh_rates()
-      :ok
-      """
-      @spec refresh_rates() :: :ok | {:error, term}
+      @doc unquote(@refresh_rates_doc)
+      @impl unquote(__MODULE__)
       def refresh_rates do
         UpdateWorker.refresh_rates(@update_worker)
       end
