@@ -66,5 +66,7 @@ defmodule CurrencyConversion.Source.Test do
   defp cast({base, rates}), do: %CurrencyConversion.Rates{base: base, rates: rates}
   defp cast(rates = %CurrencyConversion.Rates{}), do: rates
 
+  @doc false
+  @spec default_rates :: CurrencyConversion.Rates.t()
   def default_rates, do: @default_rates
 end
