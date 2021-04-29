@@ -47,8 +47,8 @@ defmodule CurrencyConversion.Mixfile do
       {:mock, "~> 0.2", only: [:test]},
       {:ex_doc, ">= 0.0.0", only: [:dev], runtime: false},
       {:excoveralls, "~> 0.4", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0-rc", only: [:dev], runtime: false},
-      {:credo, "~> 0.5", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
