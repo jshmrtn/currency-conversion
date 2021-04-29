@@ -3,7 +3,7 @@ defmodule CurrencyConversion.Mixfile do
 
   use Mix.Project
 
-  @version "1.0.0-alpha.2"
+  @version "1.0.0"
 
   def project do
     [
