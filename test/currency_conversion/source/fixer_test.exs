@@ -11,14 +11,14 @@ defmodule CurrencyConversion.Source.FixerTest do
   @not_200_response :something
   test "load when status is not 200" do
     with_mock HTTPotion, get: fn _url, _query -> @not_200_response end do
-      assert load([]) == {:error, "Fixer.io API unavailable."}
+      assert load(source_api_key: "invalid") == {:error, "Fixer.io API unavailable."}
     end
   end
 
   @invalid_json_response %HTTPotion.Response{body: "not JSON", status_code: 200}
   test "load when JSON is invalid" do
     with_mock HTTPotion, get: fn _url, _query -> @invalid_json_response end do
-      assert load([]) == {:error, "JSON decoding of response body failed."}
+      assert load(source_api_key: "invalid") == {:error, "JSON decoding of response body failed."}
     end
   end
 
@@ -35,7 +35,7 @@ defmodule CurrencyConversion.Source.FixerTest do
         get: fn _url, _query ->
           %HTTPotion.Response{body: Jason.encode!(@response), status_code: 200}
         end do
-        assert load([]) == {:error, "Fixer API Schema has changed."}
+        assert load(source_api_key: "invalid") == {:error, "Fixer API Schema has changed."}
       end
     end
   end
@@ -46,7 +46,8 @@ defmodule CurrencyConversion.Source.FixerTest do
       get: fn _url, _query ->
         %HTTPotion.Response{body: Jason.encode!(@correctly_formatted_json), status_code: 200}
       end do
-      assert load([]) == {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{EUR: 7.2}}}
+      assert load(source_api_key: "invalid") ==
+               {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{EUR: 7.2}}}
     end
   end
 
@@ -64,7 +65,7 @@ defmodule CurrencyConversion.Source.FixerTest do
       get: fn _url, _query ->
         %HTTPotion.Response{body: Jason.encode!(@error_json), status_code: 200}
       end do
-      assert load([]) ==
+      assert load(source_api_key: "invalid") ==
                {:error,
                 "Fixer API Error: You have not supplied a valid API Access Key. [Technical Support: support@apilayer.com]."}
     end

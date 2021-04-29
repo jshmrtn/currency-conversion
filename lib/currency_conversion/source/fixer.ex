@@ -43,7 +43,7 @@ with {:module, _module} <- Code.ensure_compiled(Jason),
       base_currency = Keyword.get(opts, :base_currency, @default_base_currency)
       protocol = Keyword.get(opts, :source_protocol, @default_protocol)
       base_url = protocol <> "://" <> @base_endpoint
-      access_key = Keyword.get(opts, :currency_conversion, :source_api_key)
+      access_key = Keyword.fetch!(opts, :source_api_key)
 
       case HTTPotion.get(base_url, query: %{base: base_currency, access_key: access_key}) do
         %HTTPotion.Response{body: body, status_code: 200} -> parse(body)
