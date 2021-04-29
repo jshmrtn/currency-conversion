@@ -28,13 +28,14 @@ defmodule CurrencyConversion.Rates do
   defstruct [:base, :rates]
 
   @doc false
-  @spec to_list(CurrencyConversion.Rates.t()) :: [{atom, float} | {:base, atom}]
+  @spec to_list(CurrencyConversion.Rates.t()) :: [{atom, float | integer()} | {:base, atom}]
   def to_list(%__MODULE__{base: base, rates: rates}) do
     [{:base, base} | Enum.to_list(rates)]
   end
 
   @doc false
-  @spec from_list(list :: [{atom, float} | {:base, atom}]) :: CurrencyConversion.Rates.t()
+  @spec from_list(list :: [{atom, float | integer()} | {:base, atom}]) ::
+          CurrencyConversion.Rates.t()
   def from_list(list) when is_list(list) do
     Enum.reduce(
       list,
@@ -44,7 +45,7 @@ defmodule CurrencyConversion.Rates do
           %__MODULE__{base: base, rates: rates}
 
         {currency, rate}, %__MODULE__{base: base, rates: rates}
-        when is_atom(currency) and is_float(rate) ->
+        when is_atom(currency) and (is_float(rate) or is_integer(rate)) ->
           %__MODULE__{base: base, rates: Map.put_new(rates, currency, rate)}
       end
     )
