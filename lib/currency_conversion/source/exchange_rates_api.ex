@@ -1,4 +1,5 @@
-if Code.ensure_compiled?(Jason) and Code.ensure_compiled?(HTTPotion) do
+with {:module, _module} <- Code.ensure_compiled(Jason),
+     {:module, _module} <- Code.ensure_compiled(HTTPotion) do
   defmodule CurrencyConversion.Source.ExchangeRatesApi do
     @moduledoc """
     Currency Conversion Source for http://exchangeratesapi.io/
