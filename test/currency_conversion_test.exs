@@ -1,7 +1,7 @@
 defmodule CurrencyConversionTest do
   @moduledoc false
 
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
   doctest CurrencyConversion
 
