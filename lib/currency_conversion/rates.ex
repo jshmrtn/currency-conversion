@@ -5,7 +5,7 @@ defmodule CurrencyConversion.Rates do
 
   @type t :: %CurrencyConversion.Rates{
           base: atom,
-          rates: %{atom => float}
+          rates: %{atom => float | integer}
         }
 
   @doc """
@@ -28,13 +28,13 @@ defmodule CurrencyConversion.Rates do
   defstruct [:base, :rates]
 
   @doc false
-  @spec to_list(CurrencyConversion.Rates.t()) :: [{atom, float | integer()} | {:base, atom}]
+  @spec to_list(CurrencyConversion.Rates.t()) :: [{atom, float | integer} | {:base, atom}]
   def to_list(%__MODULE__{base: base, rates: rates}) do
     [{:base, base} | Enum.to_list(rates)]
   end
 
   @doc false
-  @spec from_list(list :: [{atom, float | integer()} | {:base, atom}]) ::
+  @spec from_list(list :: [{atom, float | integer} | {:base, atom}]) ::
           CurrencyConversion.Rates.t()
   def from_list(list) when is_list(list) do
     Enum.reduce(
