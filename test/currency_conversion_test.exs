@@ -37,6 +37,12 @@ defmodule CurrencyConversionTest do
       assert %Money{amount: 5_25, currency: :USD} = Converter.convert(Money.new(7_00, :EUR), :USD)
     end
 
+    @tag test_rates: %CurrencyConversion.Rates{base: :EUR, rates: %{BIF: 1000}}
+    test "7.00 EUR => BIF" do
+      assert %Money{amount: 700_000, currency: :BIF} =
+               Converter.convert(Money.new(7_00, :EUR), :BIF)
+    end
+
     @tag test_rates: %CurrencyConversion.Rates{base: :EUR, rates: %{CHF: 0.5, USD: 0.75}}
     test "7.00 CHF => EUR" do
       assert %Money{amount: 14_00, currency: :EUR} =
