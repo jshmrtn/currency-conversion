@@ -49,4 +49,24 @@ defmodule CurrencyConversion.Source.ExchangeRatesApiTest do
       assert load([]) == {:ok, %CurrencyConversion.Rates{base: :CHF, rates: %{EUR: 7.2}}}
     end
   end
+
+  @error_json %{
+    "error" => %{
+      "code" => 101,
+      "info" =>
+        "You have not supplied a valid API Access Key. [Technical Support: support@apilayer.com]",
+      "type" => "invalid_access_key"
+    },
+    "success" => false
+  }
+  test "error yields" do
+    with_mock HTTPotion,
+      get: fn _url, _query ->
+        %HTTPotion.Response{body: Jason.encode!(@error_json), status_code: 200}
+      end do
+      assert load(source_api_key: "invalid") ==
+               {:error,
+                "Exchange Rates API Error: You have not supplied a valid API Access Key. [Technical Support: support@apilayer.com]."}
+    end
+  end
 end
